@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="da" style="font-size: 100%">
+<head>
+	<title>fcoo.dk - url.js-extensions - Demo</title>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv='x-dns-prefetch-control' content='on'>
+
+	<meta name='copyright' content='FCOO'>
+	<meta name='owner' content='FCOO'>
+
+  <link  href="bower_components.css" rel="stylesheet">	
+	<style>
+		p {
+			margin: 4px;
+		}
+		span {
+			font-family: Courier New;
+			font-size: 12px;
+			line-height: 1em;
+		}
+		span.function { background-color: #dddddd; }
+		span.result { background-color: yellow; }
+
+	</style>
+</head>
+
+<body>
+	<script src="bower_components.js"></script>
+	<script src="../src/url.js-extensions.js"></script>
+	<script>
+		function header(text){
+			$('body').append( $('<h2>' + text + '</h2>') );			
+		}
+
+		function button(onClick){
+			$('body').append( $('<button onClick="'+onClick+'">' + onClick+ '</button><br>') );			
+		}
+		
+		function display(functionStr, urlResult){
+			var func = new Function('return '+functionStr),
+					funcReturn = func(),
+					funcReturnAsString;
+					
+			funcReturnAsString = funcReturn;
+			if ($.isArray(funcReturn)){
+			  funcReturnAsString = '[';
+				if (urlResult){
+					var first = true;
+					for (var i=0; i<funcReturn.length; i++){
+						var id = funcReturn[i];
+						funcReturnAsString += (first?'':',')+'"'+id+'":"'+funcReturn[id]+'"';
+						first = false;
+					}
+				}
+				else {
+					for (var i=0; i<funcReturn.length; i++ )
+						funcReturnAsString += (i?',':'')+JSON.stringify(funcReturn[i]);
+				}
+				funcReturnAsString += ']';
+			}
+
+
+			var $p = $('<p></p>').appendTo($('body'));			
+			$('<span class="function">').appendTo($p).text(functionStr);
+			$('<span>').appendTo($p).text('=>');
+			$('<span class="result">').appendTo($p).text(funcReturnAsString);
+			$('<span>').appendTo($p).text('(' + (typeof funcReturn) + ')');
+
+			console.log(functionStr, '=>', funcReturnAsString, 'return=',funcReturn);			
+		}
+/*
+		header('math.js');	
+			display('significant(123999, 3)');	
+			display('precision(12.345678, 3)');	
+			display('nearest(1234567, 100)');
+			display('roundDownTo(1234567, 100)');
+			display('roundToRange(123, 100, 200)');
+			display('roundToRange(999, 100, 200)');
+			display('toDecimal(1234)');
+*/
+	
+		header('url.js-extensions');
+
+			display('Url.adjustUrl();', true);
+			display('Url.updateSearchParam("off", true);', true);
+			display('Url.updateHashParam("hash1", "value1");', true);
+
+			display('JSON.stringify( Url.parseQuery() )', true);
+
+//			display("updateUrlParameter('paramA', 'newValue')");
+//			display("updateUrlParameters({'paramA': 'newValue', 'paramB': 'newValue2'})");
+
+//			display("updateUrlHash('hashA', 'newValue')");
+//			display("updateUrlHashes({'hashA': 'newValue', 'hashB': 'newValue2'})");
+
+			button("Url.updateSearchParam('newparam', 'newvalue');");
+
+    
+			display('Url.updateSearchParam("on", true);', true);
+			display('Url.updateHashParam("on", false);', true);
+    
+  			display('JSON.stringify( Url.parseAll({on:"_boolean"}, {test2:"default_value_for_test2"}) )', true);
+
+    
+    
+    
+    </script>
+</body>
+</html>
