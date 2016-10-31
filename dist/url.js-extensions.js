@@ -38,7 +38,7 @@
         preChar = preChar || '#';
         var strList,
             result = '',
-            valueRegEx = new RegExp(/[\w\-_. ]+/),
+            valueRegEx = new RegExp(/[\w\-_. {}:"]+/),
             idRegEx = new RegExp(/[\w\-_]+/),
             idValues, id, values, value, oneValueOk, i, j;
 
@@ -47,8 +47,10 @@
         str = str.replace(/%2C/g, ",");
         str = str.replace(/%3F/g, "?");
         str = str.replace(/%23/g, "#");
+        str = str.replace(/%7B/g, "{");
+        str = str.replace(/%7D/g, "}");
 
-        //Remove pre-#
+        //Remove pre-char
         while (str.length && (str.charAt(0) == preChar) )
             str = str.slice(1);
 
@@ -89,7 +91,7 @@
                 }
             } //end of correct id
         }
-        return result;
+        return decodeURIComponent(result);
     }
 
 
@@ -132,9 +134,8 @@
             delete hashParsed[hashParam];
         }
         else {
-            if (hashParsed[hashParam] === value){
+            if (hashParsed[hashParam] === value)
                 return ns;
-            }
             hashParsed[hashParam] = value;
         }
         this.hash (this.stringify(hashParsed), triggerPopState);
@@ -147,24 +148,20 @@
     Validate value using validator
     validator = regExp | function( value ) | array of validator
     *******************************************/
-/*
-function tryParseJSON (jsonString){
-    try {
-        var o = JSON.parse(jsonString);
 
-        // Handle non-exception-throwing cases:
-        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
-        // but... JSON.parse(null) returns null, and typeof null === "object", 
-        // so we must check for that, too. Thankfully, null is falsey, so this suffices:
-        if (o && typeof o === "object") {   //OR $.type( o ) == 'object'
-            return o;
+    function validateJSONValue( value ){
+        try {
+            var jsonObj = JSON.parse( value );
+            if ($.type( jsonObj ) == 'object')
+                return true;
         }
+        catch (e) { 
+            return false;
+        }
+        return false;
     }
-    catch (e) { }
 
-    return false;
-};
-*/
+
     function validateValue( value, validator ){
         //Convert Boolean into String
         if ($.type( value ) === "boolean")
@@ -187,11 +184,13 @@ function tryParseJSON (jsonString){
             });
             return result;
         }
-
         switch (validator){
-          case 'BOOLEAN' : validator = /true|false/;           break;
-          case 'NUMBER'  : validator = /[-+]?[0-9]*\.?[0-9]+/; break;
-          case 'NOTEMPTY': validator = /.+/;                   break;
+            case 'BOOLEAN' : validator = /true|false/;           break;
+            case 'NUMBER'  : validator = /[-+]?[0-9]*\.?[0-9]+/; break;
+            case 'NOTEMPTY': validator = /.+/;                   break;
+
+            //Special case for json-object-string
+            case 'JSON'    : return validateValue( value, validateJSONValue); 
         }
 
         var regExp = new RegExp(validator),
@@ -210,6 +209,7 @@ function tryParseJSON (jsonString){
     options: {
         convertBoolean: Boolean (default = true ) If true all values == "true" or "false" are converted into Boolean
         convertNumber : Boolean (default = true ) If true all values representing a number is converted to float
+        convertJSON   : Boolean (default = true ) If true all values representing a stringify json-object is converted to a real json-object
         queryOverHash : Boolean (default = true ) If true and the same id is given in both query-string and hash-tag the value from query-string is returned. 
                                                   If false the value from hash-tag is returned
         updateUrl     : Boolean (default = true ) If true failed {id=value} are removed and any defaultObj {id:value} added to the url
@@ -222,6 +222,7 @@ function tryParseJSON (jsonString){
         options = $.extend( {}, options, { 
             convertBoolean: true, 
             convertNumber : true, 
+            convertJSON   : true,
             queryOverHash : true, 
             updateUrl     : true 
         }); 
@@ -230,6 +231,7 @@ function tryParseJSON (jsonString){
             hashObj = this.parseHash(),
             _this = this;
 
+        //*****************************************************************
         function updateObj( obj ){
             $.each( obj, function( id, value ){
                 //Validate value
@@ -245,17 +247,22 @@ function tryParseJSON (jsonString){
                     value = parseFloat( value );
                 }
                 
-                obj[id] = value;
+                //Remove deleted keys
+                if (value === undefined)
+                    delete obj[id];
+                else
+                    obj[id] = value;
             });
         }
 
+        //*****************************************************************
         updateObj( queryObj );
         updateObj( hashObj );
         
         //Update url
         if (options.updateUrl){
-            var searchStr = this.stringify(queryObj),
-                hashStr = this.stringify(hashObj);
+            var searchStr = decodeURIComponent( this.stringify(queryObj) ),
+                hashStr   = decodeURIComponent( this.stringify(hashObj) );
             this._updateAll( 
                 window.location.pathname + 
                 (searchStr ? '?'+searchStr : '') + 
@@ -265,6 +272,13 @@ function tryParseJSON (jsonString){
 
         var result = $.extend( options.queryOverHash ? hashObj  : queryObj, 
                                options.queryOverHash ? queryObj : hashObj   ); 
+        
+        //Convert String to json-object
+        if (options.convertJSON)
+            $.each( result, function( id, value ){
+                if ( _this.validateValue( value, 'JSON') )
+                    result[id] = JSON.parse( value );
+            });        
         
         //Insert default values
         $.each( defaultObj, function( id, value ){
@@ -291,7 +305,7 @@ function tryParseJSON (jsonString){
     $(function() { 
 
     
-    }); //End of initialize/ready
+    }); 
     //******************************************
 
 

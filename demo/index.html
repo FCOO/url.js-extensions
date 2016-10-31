@@ -68,30 +68,15 @@
 
 			console.log(functionStr, '=>', funcReturnAsString, 'return=',funcReturn);			
 		}
-/*
-		header('math.js');	
-			display('significant(123999, 3)');	
-			display('precision(12.345678, 3)');	
-			display('nearest(1234567, 100)');
-			display('roundDownTo(1234567, 100)');
-			display('roundToRange(123, 100, 200)');
-			display('roundToRange(999, 100, 200)');
-			display('toDecimal(1234)');
-*/
 	
 		header('url.js-extensions');
 
 			display('Url.adjustUrl();', true);
-			display('Url.updateSearchParam("off", true);', true);
+
+            display('Url.updateSearchParam("off", true);', true);
 			display('Url.updateHashParam("hash1", "value1");', true);
 
 			display('JSON.stringify( Url.parseQuery() )', true);
-
-//			display("updateUrlParameter('paramA', 'newValue')");
-//			display("updateUrlParameters({'paramA': 'newValue', 'paramB': 'newValue2'})");
-
-//			display("updateUrlHash('hashA', 'newValue')");
-//			display("updateUrlHashes({'hashA': 'newValue', 'hashB': 'newValue2'})");
 
 			button("Url.updateSearchParam('newparam', 'newvalue');");
 
@@ -99,11 +84,10 @@
 			display('Url.updateSearchParam("on", true);', true);
 			display('Url.updateHashParam("on", false);', true);
     
-  			display('JSON.stringify( Url.parseAll({on:"BOOLEAN"}, {test2:"default_value_for_test2"}) )', true);
+			display('Url.updateSearchParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
 
-    
-    
-    
+            display('JSON.stringify( Url.parseAll({on:"BOOLEAN", json:"JSON"}, {test2:"default_value_for_test2"}) )', true);
+
     </script>
 </body>
 </html>
