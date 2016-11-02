@@ -79,14 +79,15 @@
 			display('JSON.stringify( Url.parseQuery() )', true);
 
 			button("Url.updateSearchParam('newparam', 'newvalue');");
-
     
 			display('Url.updateSearchParam("on", true);', true);
 			display('Url.updateHashParam("on", false);', true);
-    
-			display('Url.updateSearchParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
+
+            display('Url.updateSearchParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
+            display('Url.updateHashParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
 
             display('JSON.stringify( Url.parseAll({on:"BOOLEAN", json:"JSON"}, {test2:"default_value_for_test2"}) )', true);
+
 
     </script>
 </body>

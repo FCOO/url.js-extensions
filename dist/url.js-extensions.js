@@ -11,10 +11,48 @@
 (function ($, window, document, undefined) {
     "use strict";
     
-    var ns = window.Url; 
+    /******************************************
+    anyString(name, notDecoded, search, sep)
+    Copy of Url.queryString with optional input string (search) 
+    and separaator (sep)
+    ******************************************/
+    function anyString(name, notDecoded, search, sep){
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+
+        var regex = new RegExp("[\\"+sep+"&]" + name + "=([^&#]*)")
+          , results = regex.exec(search)
+          , encoded = null
+          ;
+
+        if (results === null) {
+            regex = new RegExp("[\\"+sep+"&]" + name + "(\\&([^&#]*)|$)");
+            if (regex.test(search)) {
+                return true;
+            }
+            return undefined;
+        } else {
+            encoded = results[1].replace(/\+/g, " ");
+            if (notDecoded) {
+                return encoded;
+            }
+            return decodeURIComponent(encoded);
+        }
+    }
+
 
     /******************************************
-    correctSearchOrHash
+    _upateSearchAndHash
+    *******************************************/
+    function _upateSearchAndHash( searchStr, hashStr ){
+        return this._updateAll( 
+                   window.location.pathname + 
+                   (searchStr ? '?' + searchStr : '') + 
+                   (hashStr  ? '#' + hashStr  : '')
+               );          
+    }
+
+    /******************************************
+    _correctSearchOrHash
     Check and correct search or hash = ID_VALUE[&ID_VALUE]
         ID_VALUE = 
             ID or
@@ -23,7 +61,7 @@
         VALUE contains only a-z 0-9 - _ SPACE
         ID contains only a-z 0-9 - _
     *******************************************/
-    function correctSearchOrHash( str, preChar ){
+    function _correctSearchOrHash( str, preChar ){
         function decodeStr( str ){
             try {
                 decodeURIComponent( str ); 
@@ -36,19 +74,22 @@
 
         //Chack and correct the parameter and/or hash-tag
         preChar = preChar || '#';
+
         var strList,
             result = '',
-            valueRegEx = new RegExp(/[\w\-_. {}:"]+/),
             idRegEx = new RegExp(/[\w\-_]+/),
             idValues, id, values, value, oneValueOk, i, j;
 
         //Convert to char
-        str = str.replace(/%3D/g, "=");
-        str = str.replace(/%2C/g, ",");
-        str = str.replace(/%3F/g, "?");
-        str = str.replace(/%23/g, "#");
-        str = str.replace(/%7B/g, "{");
-        str = str.replace(/%7D/g, "}");
+        str = str.replace(/%3D/g, '=');
+        str = str.replace(/%2C/g, ',');
+        str = str.replace(/%3F/g, '?');
+        str = str.replace(/%23/g, '#');
+        str = str.replace(/%7B/g, '{');
+        str = str.replace(/%7D/g, '}');
+        str = str.replace(/%2B/g, '+');
+        str = str.replace(/%22/g, '"');
+        str = str.replace(/%3A/g, ':');
 
         //Remove pre-char
         while (str.length && (str.charAt(0) == preChar) )
@@ -72,8 +113,11 @@
                     var valueList = values.split(',');
                     for (j=0; j<valueList.length; j++ ){
                         value = decodeStr( valueList[j] );
-                        if ( value && (valueRegEx.exec(value) == value) )
+                        if ( value ){
+                            if (value == 'undefined')
+                              valueList[j] = 'false';
                             oneValueOk = true;
+                        }
                         else
                             valueList[j] = undefined;
                     }
@@ -83,10 +127,8 @@
                     var firstValue = true;
                     for (j=0; j<valueList.length; j++ ){
                         value = valueList[j];
-                        if (value !== undefined){
-                            result += (firstValue ? '=' : ',') + (value == 'undefined' ? 'false' : value);
-                            firstValue = false;
-                        }
+                        result += (firstValue ? '=' : ',') + (value ? value : ''); 
+                        firstValue = false;
                     }
                 }
             } //end of correct id
@@ -100,28 +142,27 @@
     Check and correct the url
     *******************************************/
     function adjustUrl(){
-        //Update search string
-        var newSearchObj = ns.parseQuery( correctSearchOrHash( window.location.search, '?' ) );
-        ns.removeQuery(/*push, trigger*/);
-        $.each( newSearchObj, function( param, value){
-            ns.updateSearchParam(param, value/*, push, triggerPopState*/);
-        });
-
-        //Update hash-tags
-        var newHash = correctSearchOrHash( window.location.hash, '#' );
-        ns.removeHash(/*push, trigger*/);
-        ns.hash( newHash );
-
-        return ns;
+        return this._upateSearchAndHash( 
+                   this._correctSearchOrHash( window.location.search, '?' ), 
+                   this._correctSearchOrHash( window.location.hash, '#' )
+               );
     }
 
+    /******************************************
+    hashString
+    Same as queryString but for the hash
+    It is a adjusted copy of queryString
+    *******************************************/
+    function hashString(name, notDecoded){
+        return anyString(name, notDecoded, window.location.hash, '#');
+    }
     
     /******************************************
     parseHash
     Same as parseQuery but for the hash
     *******************************************/
     function parseHash(){
-        return ns.parseQuery( ns.hash() );    
+        return this.parseQuery( this.hash() );    
     }
 
     /******************************************
@@ -135,11 +176,11 @@
         }
         else {
             if (hashParsed[hashParam] === value)
-                return ns;
+                return this;
             hashParsed[hashParam] = value;
         }
         this.hash (this.stringify(hashParsed), triggerPopState);
-        return ns;
+        return this;
     }
 
 
@@ -148,7 +189,6 @@
     Validate value using validator
     validator = regExp | function( value ) | array of validator
     *******************************************/
-
     function validateJSONValue( value ){
         try {
             var jsonObj = JSON.parse( value );
@@ -160,7 +200,6 @@
         }
         return false;
     }
-
 
     function validateValue( value, validator ){
         //Convert Boolean into String
@@ -227,12 +266,18 @@
             updateUrl     : true 
         }); 
         
-        var queryObj = this.parseQuery(),
-            hashObj = this.parseHash(),
-            _this = this;
+        var _this = this;
 
         //*****************************************************************
-        function updateObj( obj ){
+        function parseObj( str ){
+
+            var obj = _this.parseQuery( str );
+            //Use anyString(..) to get adjusted value
+            $.each( obj, function( id/*, value*/ ){
+                obj[id] = anyString(id, true, '?'+str, '?');
+            });
+
+            //Validate all values
             $.each( obj, function( id, value ){
                 //Validate value
                 if ( !_this.validateValue( value, validatorObj[id] ) )
@@ -253,22 +298,20 @@
                 else
                     obj[id] = value;
             });
-        }
 
-        //*****************************************************************
-        updateObj( queryObj );
-        updateObj( hashObj );
-        
-        //Update url
-        if (options.updateUrl){
-            var searchStr = decodeURIComponent( this.stringify(queryObj) ),
-                hashStr   = decodeURIComponent( this.stringify(hashObj) );
-            this._updateAll( 
-                window.location.pathname + 
-                (searchStr ? '?'+searchStr : '') + 
-                (hashStr ? '#'+hashStr : '')
-            );          
+            return obj;
         }
+        //*****************************************************************
+
+        var queryObj = parseObj( this._correctSearchOrHash( window.location.search, '?' ) ),
+            hashObj  = parseObj( this._correctSearchOrHash( window.location.hash,   '#' ) );
+
+        //Update url
+        if (options.updateUrl)
+            this._upateSearchAndHash(
+                decodeURIComponent( this.stringify(queryObj) ),
+                decodeURIComponent( this.stringify(hashObj) )
+            );
 
         var result = $.extend( options.queryOverHash ? hashObj  : queryObj, 
                                options.queryOverHash ? queryObj : hashObj   ); 
@@ -289,22 +332,25 @@
     }
 
     //Extend window.Url with the new methods
-    $.extend( ns, {
-        adjustUrl      : adjustUrl,
-        parseHash      : parseHash,
-        updateHashParam: updateHashParam,
-        validateValue  : validateValue,
-        parseAll       : parseAll
+    $.extend( window.Url, {
+        _upateSearchAndHash  : _upateSearchAndHash,
+        _correctSearchOrHash : _correctSearchOrHash,
+        adjustUrl            : adjustUrl,
+        hashString           : hashString,
+        parseHash            : parseHash,
+        updateHashParam      : updateHashParam,
+        validateValue        : validateValue,
+        parseAll             : parseAll
     });
 
-   
+
+
 
     /******************************************
     Initialize/ready 
     *******************************************/
     $(function() { 
-
-    
+        window.Url.adjustUrl();
     }); 
     //******************************************
 
@@ -322,17 +368,5 @@ window.location.host
 window.location.pathname
 window.location.search 
 window.location.hash 
-
-Alternative way of getting parts of the url
-var parser = document.createElement('a');
-parser.href = "http://example.com:3000/pathname/?search=test#hash";
-
-parser.protocol; // => "http:"
-parser.hostname; // => "example.com"
-parser.port;     // => "3000"
-parser.pathname; // => "/pathname/"
-parser.search;   // => "?search=test"
-parser.hash;     // => "#hash"
-parser.host;     // => "example.com:3000"
 
 ******************************************/
