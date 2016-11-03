@@ -27,10 +27,12 @@ http://FCOO.github.io/url.js-extensions/demo/
 #### [`hash(newHash, triggerPopState)`](https://github.com/jillix/url.js#hashnewhash-triggerpopstate)
 
 
-### New options and methods
+### New methods
 
 #### `adjustUrl()`
-Check and correct the url by removing strings that are not decodeable
+Check and correct the url by removing strings that are not decodeable. 
+Also called on window-event `hashchange`
+
 Eg. `?test=1,2,3,4,%5,6,7,9` => `?test=1,2,3,4,,6,7,9`
 
 #### `hashString(name, notDecoded)`

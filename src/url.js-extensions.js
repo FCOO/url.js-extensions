@@ -331,6 +331,10 @@
         return result; 
     }
 
+    function onHashChange(){
+        this.adjustUrl();
+    }
+
     //Extend window.Url with the new methods
     $.extend( window.Url, {
         _upateSearchAndHash  : _upateSearchAndHash,
@@ -340,9 +344,12 @@
         parseHash            : parseHash,
         updateHashParam      : updateHashParam,
         validateValue        : validateValue,
-        parseAll             : parseAll
+        parseAll             : parseAll,
+        onHashChange         : onHashChange
     });
 
+
+    $(window).on( 'hashchange', $.proxy( onHashChange, window.Url ) );
 
 
 

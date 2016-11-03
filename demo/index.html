@@ -78,8 +78,7 @@
 
 			display('JSON.stringify( Url.parseQuery() )', true);
 
-			button("Url.updateSearchParam('newparam', 'newvalue');");
-    
+   
 			display('Url.updateSearchParam("on", true);', true);
 			display('Url.updateHashParam("on", false);', true);
 
@@ -88,6 +87,8 @@
 
             display('JSON.stringify( Url.parseAll({on:"BOOLEAN", json:"JSON"}, {test2:"default_value_for_test2"}) )', true);
 
+			button("Url.updateSearchParam('newparam', 'newvalue');");
+            button("console.log( Url.parseAll() );");
 
     </script>
 </body>
