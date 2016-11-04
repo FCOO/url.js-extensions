@@ -72,7 +72,7 @@ Returns a object with `id: value` for both query-string and hash-tags
 `convertNumber` : `Boolean` (default = `true`  ) If `true` all values representing a number is converted to float
 `convertJSON`  : `Boolean` (default = `true` ) If true all values representing a stringify json-object is converted to a real json-object
 `queryOverHash`: `Boolean` (default = `true` ) If `true` and the same `id` is given in both query-string and hash-tag the value from query-string is returned. If `false` the value from hash-tag is returned
-`updateUrl`: `Boolean` (default = `true` ) If `true` failed `id=value` are removed and any `id:value` added to the url
+
 `}`
 
 
