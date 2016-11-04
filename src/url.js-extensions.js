@@ -46,8 +46,8 @@
     function _upateSearchAndHash( searchStr, hashStr ){
         return this._updateAll( 
                    window.location.pathname + 
-                   (searchStr ? '?' + searchStr : '') + 
-                   (hashStr  ? '#' + hashStr  : '')
+                   (searchStr ? '?' + encodeURI(searchStr) : '') + 
+                   (hashStr  ? '#' + encodeURI(hashStr)  : '')
                );          
     }
 
@@ -331,6 +331,9 @@
         return result; 
     }
 
+    /******************************************
+    onHashChange()
+    ******************************************/
     function onHashChange(){
         this.adjustUrl();
     }
