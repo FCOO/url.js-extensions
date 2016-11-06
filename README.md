@@ -41,7 +41,7 @@ Same as `queryString` but for the hash
 #### `parseHash()`
 Same as `parseQuery` but for the hash
 
-#### `updateHashParam(hashParam, value, triggerPopState)`
+#### `updateHashParam(hashParam, value, push, triggerPopState)`
 Same as `updateSearchParam` but for the hash
 
 #### `validateValue( value, validator )`
