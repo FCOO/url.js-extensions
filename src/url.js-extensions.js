@@ -244,9 +244,9 @@
 
 
     /******************************************
-    parseAll( validatorObj, defaultObj, options )
-    Parse the combined query-string and hash-tags
-    Returns a object with `id: value` for both query-string and hash-tags
+    _parseObject( obj, validatorObj, defaultObj, options )
+    Parse obj after it is validated and converted acording to
+    validatorObj, defaultObj, and options
 
     validatorObj: object with {id: validator,..}. Failed values are removed 
     defaultObj  : object with {id: value}. Values to be used if `id` is missing or fails validation 
@@ -257,9 +257,8 @@
         queryOverHash : Boolean (default = true ) If true and the same id is given in both query-string and hash-tag the value from query-string is returned. 
                                                   If false the value from hash-tag is returned
     }
-
     *******************************************/
-    function parseAll( validatorObj, defaultObj, options ){
+    function _parseObject( obj, validatorObj, defaultObj, options ){
         validatorObj = validatorObj || {}; 
         defaultObj = defaultObj || {}; 
         options = $.extend( {}, options, { 
@@ -271,60 +270,74 @@
         
         var _this = this;
 
-        //*****************************************************************
-        function parseObj( str ){
+        //Validate all values
+        $.each( obj, function( id, value ){
+            //Convert '+' to space
+            if ( $.type(value) == 'string' )
+                value = value.replace(/\+/g, " ");
+            
+            //Validate value
+            if ( !_this.validateValue( value, validatorObj[id] ) )
+                value = undefined; 
 
+            //Convert "true" and false" to Boolean
+            if ( options.convertBoolean && ( (value == 'true') || (value == 'false') ) )
+              value = (value == 'true');
+                
+            //Convert String to Float
+            if (options.convertNumber && _this.validateValue( value, 'NUMBER') ){
+                value = parseFloat( value );
+            }
+                
+            //Remove deleted keys
+            if (value === undefined)
+                delete obj[id];
+            else
+                obj[id] = value;
+        });
+
+        //Convert String to json-object
+        if (options.convertJSON)
+            $.each( obj, function( id, value ){
+                if ( _this.validateValue( value, 'JSON') )
+                    obj[id] = JSON.parse( value );
+            });        
+        
+        //Insert default values
+        $.each( defaultObj, function( id, value ){
+            if (obj[id] === undefined)
+              obj[id] = value;
+        });
+
+        return obj;
+    }
+
+    /******************************************
+    parseAll( validatorObj, defaultObj, options )
+    Parse the combined query-string and hash-tags
+    Returns a object with `id: value` for both query-string and hash-tags
+    validatorObj, defaultObj, options: See _parseObject
+    *******************************************/
+    function parseAll( validatorObj, defaultObj, options ){
+        var _this = this,
+            queryOverHash = options ? !!options.queryOverHash : true;
+
+        function parseObj( str ){ 
             var obj = _this.parseQuery( str );
+
             //Use anyString(..) to get adjusted value
             $.each( obj, function( id/*, value*/ ){
                 obj[id] = anyString(id, false, '?'+str, '?');
             });
 
-            //Validate all values
-            $.each( obj, function( id, value ){
-                //Validate value
-                if ( !_this.validateValue( value, validatorObj[id] ) )
-                  value = undefined; 
-
-                //Convert "true" and false" to Boolean
-                if ( options.convertBoolean && ( (value == 'true') || (value == 'false') ) )
-                  value = (value == 'true');
-                
-                //Convert String to Float
-                if (options.convertNumber && _this.validateValue( value, 'NUMBER') ){
-                    value = parseFloat( value );
-                }
-                
-                //Remove deleted keys
-                if (value === undefined)
-                    delete obj[id];
-                else
-                    obj[id] = value;
-            });
-
-            return obj;
+            return _this._parseObject( obj, validatorObj, defaultObj, options ); 
         }
-        //*****************************************************************
 
         var queryObj = parseObj( this._correctSearchOrHash( window.location.search, '?' ) ),
             hashObj  = parseObj( this._correctSearchOrHash( window.location.hash,   '#' ) );
 
-        var result = $.extend( options.queryOverHash ? hashObj  : queryObj, 
-                               options.queryOverHash ? queryObj : hashObj   ); 
-        
-        //Convert String to json-object
-        if (options.convertJSON)
-            $.each( result, function( id, value ){
-                if ( _this.validateValue( value, 'JSON') )
-                    result[id] = JSON.parse( value );
-            });        
-        
-        //Insert default values
-        $.each( defaultObj, function( id, value ){
-            if (result[id] === undefined)
-              result[id] = value;
-        });
-        return result; 
+        return $.extend( queryOverHash ? hashObj  : queryObj, 
+                         queryOverHash ? queryObj : hashObj   ); 
     }
 
     /******************************************
@@ -336,15 +349,16 @@
 
     //Extend window.Url with the new methods
     $.extend( window.Url, {
-        updateSearchAndHash  : updateSearchAndHash,
-        _correctSearchOrHash : _correctSearchOrHash,
-        adjustUrl            : adjustUrl,
-        hashString           : hashString,
-        parseHash            : parseHash,
-        updateHashParam      : updateHashParam,
-        validateValue        : validateValue,
-        parseAll             : parseAll,
-        onHashChange         : onHashChange
+        updateSearchAndHash : updateSearchAndHash,
+        _correctSearchOrHash: _correctSearchOrHash,
+        adjustUrl           : adjustUrl,
+        hashString          : hashString,
+        parseHash           : parseHash,
+        updateHashParam     : updateHashParam,
+        validateValue       : validateValue,
+        _parseObject        : _parseObject,
+        parseAll            : parseAll,
+        onHashChange        : onHashChange
     });
 
 

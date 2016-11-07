@@ -63,10 +63,8 @@ The validations will be preformed in the order of the array
 Eg. `Url.validateValue( myValue, ["_number", function( v ){ return parseFloat(v) > 0; } ] );` will return `true` if `myValue` is a number and greater than zero
 
 
-
-#### `parseAll( validatorObj, defaultObj, options )
-
-Returns a object with `id: value` for both query-string and hash-tags
+#### `_parseObject( obj, validatorObj, defaultObj, options )`
+Parse obj after it is validated and converted acording to `validatorObj`, `defaultObj`, and `options`
 
 `validatorObj`: object with `id:validator`. Failed values are removed 
 `defaultObj  `: object with `id:value`. Values to be used if `id` is missing or fails validation 
@@ -78,6 +76,11 @@ Returns a object with `id: value` for both query-string and hash-tags
 `queryOverHash`: `Boolean` (default = `true` ) If `true` and the same `id` is given in both query-string and hash-tag the value from query-string is returned. If `false` the value from hash-tag is returned
 
 `}`
+
+#### `parseAll( validatorObj, defaultObj, options )
+Returns a object with `id: value` for both query-string and hash-tags
+`validatorObj`, `defaultObj`, and `options`: See `_parseObject(...)`
+
 
 
 ## Copyright and License
