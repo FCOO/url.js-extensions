@@ -35,6 +35,10 @@ Also called on window-event `hashchange`
 
 Eg. `?test=1,2,3,4,%5,6,7,9` => `?test=1,2,3,4,,6,7,9`
 
+#### `updateSearchAndHash( searchStr, hashStr, push, triggerPopState )`
+Update the full url. Both `searchStr` and `hashStr` are adjusted first
+
+
 #### `hashString(name, notDecoded)`
 Same as `queryString` but for the hash
 

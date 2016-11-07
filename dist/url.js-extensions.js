@@ -41,14 +41,18 @@
 
 
     /******************************************
-    _upateSearchAndHash
+    updateSearchAndHash
     *******************************************/
-    function _upateSearchAndHash( searchStr, hashStr ){
+    function updateSearchAndHash( searchStr, hashStr, push, triggerPopState ){
+        searchStr = this._correctSearchOrHash( searchStr ); 
+        hashStr   = this._correctSearchOrHash( hashStr );
+
         return this._updateAll( 
-                   window.location.pathname + 
-                   (searchStr ? '?' + encodeURI(searchStr) : '') + 
-                   (hashStr  ? '#' + encodeURI(hashStr)  : '')
-               );          
+            window.location.pathname + 
+            (searchStr ? '?' + encodeURI(searchStr) : '') + 
+            (hashStr  ? '#' + encodeURI(hashStr)  : ''),
+            push, triggerPopState
+       );          
     }
 
     /******************************************
@@ -90,7 +94,7 @@
         str = str.replace(/%3A/g, ':');
 
         //Remove pre-char
-        while (str.length && (str.charAt(0) == preChar) )
+        while (preChar && str.length && (str.charAt(0) == preChar) )
             str = str.slice(1);
 
         strList = str.split('&'); 
@@ -140,7 +144,7 @@
     Check and correct the url
     *******************************************/
     function adjustUrl(){
-        return this._upateSearchAndHash( 
+        return this.updateSearchAndHash( 
                    this._correctSearchOrHash( window.location.search, '?' ), 
                    this._correctSearchOrHash( window.location.hash, '#' )
                );
@@ -178,10 +182,10 @@
             hashParsed[hashParam] = value;
         }
 
-        var newHash = '#' + this.stringify(hashParsed);
-        this._updateAll(window.location.pathname + window.location.search + newHash, push, triggerPopState);
-       
-        return this;
+        return this.updateSearchAndHash( 
+                    window.location.search, 
+                    this.stringify(hashParsed),
+                    push, triggerPopState ); 
     }
 
 
@@ -332,7 +336,7 @@
 
     //Extend window.Url with the new methods
     $.extend( window.Url, {
-        _upateSearchAndHash  : _upateSearchAndHash,
+        updateSearchAndHash  : updateSearchAndHash,
         _correctSearchOrHash : _correctSearchOrHash,
         adjustUrl            : adjustUrl,
         hashString           : hashString,
