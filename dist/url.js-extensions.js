@@ -10,7 +10,10 @@
 
 (function ($, window, document, undefined) {
     "use strict";
+
     
+    var location = window.history.location || window.location;
+
     /******************************************
     anyString(name, notDecoded, search, sep)
     Copy of Url.queryString with optional input string (search) 
@@ -143,7 +146,8 @@
     adjustUrl
     Check and correct the url
     *******************************************/
-    function adjustUrl(){
+    function adjustUrl(){ 
+
         return this.updateSearchAndHash( 
                    this._correctSearchOrHash( window.location.search, '?' ), 
                    this._correctSearchOrHash( window.location.hash, '#' )
