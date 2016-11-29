@@ -73,22 +73,22 @@
 
 			display('Url.adjustUrl();', true);
 
-            display('Url.updateSearchParam("off", true);', true);
+            //display('Url.updateSearchParam("off", true);', true);
 
             display('Url.updateHashParam("hash1", "value1");', true);
 
 			display('JSON.stringify( Url.parseQuery() )', true);
 
    
-			display('Url.updateSearchParam("on", true);', true);
+			//display('Url.updateSearchParam("on", true);', true);
 			display('Url.updateHashParam("on", false);', true);
 
-            display('Url.updateSearchParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
+            //display('Url.updateSearchParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
             display('Url.updateHashParam("json", JSON.stringify({a:"AAA", b:"BBB", c:{c1:"C1C1",c2:"C2C2"}}));', true);
 
             display('JSON.stringify( Url.parseAll({on:"BOOLEAN", json:"JSON"}, {test2:"default_value_for_test2"}) )', true);
 
-			button("Url.updateSearchParam('newparam', 'newvalue');");
+			//button("Url.updateSearchParam('newparam', 'newvalue');");
 			button("Url.updateHashParam('newHash', 'newhashvalue');");
             button("console.log( Url.parseAll() );");
 

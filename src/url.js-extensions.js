@@ -49,8 +49,8 @@
     function updateSearchAndHash( searchStr, hashStr, push, triggerPopState ){
         searchStr = this._correctSearchOrHash( searchStr, '?' ); 
         hashStr   = this._correctSearchOrHash( hashStr, '#' );
-        var newUrl = //window.location.pathname + 
-                     window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
+        var newUrl = window.location.pathname + 
+                     //window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
                         (searchStr ? '?' + encodeURI(searchStr) : '') + 
                         (hashStr  ? '#' + encodeURI(hashStr)  : '');
 
