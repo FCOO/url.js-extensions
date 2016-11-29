@@ -1,6 +1,6 @@
 {
   "name": "url.js-extensions",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "homepage": "https://github.com/FCOO/url.js-extensions",
   "authors": [
     "Niels Holt"
@@ -22,6 +22,11 @@
     "url.js": {
       "main": [
         "src/url.min.js"
+      ]
+    },
+    "history.js": {
+      "main": [
+        "scripts/bundled/html4+html5/native.history.js"
       ]
     }
   },

@@ -11,7 +11,7 @@
 (function ($, window, document, undefined) {
     "use strict";
 
-    
+    //Using html5-history-api as polyfill for IE9
     var location = window.history.location || window.location;
 
     /******************************************
@@ -47,17 +47,24 @@
     updateSearchAndHash
     *******************************************/
     function updateSearchAndHash( searchStr, hashStr, push, triggerPopState ){
-        searchStr = this._correctSearchOrHash( searchStr ); 
-        hashStr   = this._correctSearchOrHash( hashStr );
+        searchStr = this._correctSearchOrHash( searchStr, '?' ); 
+        hashStr   = this._correctSearchOrHash( hashStr, '#' );
+        var newUrl = //window.location.pathname + 
+                     window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
+                        (searchStr ? '?' + encodeURI(searchStr) : '') + 
+                        (hashStr  ? '#' + encodeURI(hashStr)  : '');
 
-        return this._updateAll( 
-            window.location.pathname + 
-            (searchStr ? '?' + encodeURI(searchStr) : '') + 
-            (hashStr  ? '#' + encodeURI(hashStr)  : ''),
-            push, triggerPopState
-       );          
+        //If the search is unchanged => only change the hash
+        if (this._correctSearchOrHash(window.location.search, '?') == searchStr){
+            window.location.hash = hashStr;            
+//            return this;
+        }        
+        else 
+            this._updateAll( newUrl, push, triggerPopState );          
+        return newUrl;
     }
 
+    
     /******************************************
     _correctSearchOrHash
     Check and correct search or hash = ID_VALUE[&ID_VALUE]
@@ -147,10 +154,9 @@
     Check and correct the url
     *******************************************/
     function adjustUrl(){ 
-
         return this.updateSearchAndHash( 
-                   this._correctSearchOrHash( window.location.search, '?' ), 
-                   this._correctSearchOrHash( window.location.hash, '#' )
+                   window.location.search,
+                   window.location.hash
                );
     }
 
@@ -185,10 +191,9 @@
                 return this;
             hashParsed[hashParam] = value;
         }
-
         return this.updateSearchAndHash( 
                     window.location.search, 
-                    this.stringify(hashParsed),
+                    this.stringify(hashParsed), 
                     push, triggerPopState ); 
     }
 
