@@ -31,13 +31,12 @@ http://FCOO.github.io/url.js-extensions/demo/
 
 #### `adjustUrl()`
 Check and correct the url by removing strings that are not decodeable. 
-Also called on window-event `hashchange`
 
 Eg. `?test=1,2,3,4,%5,6,7,9` => `?test=1,2,3,4,,6,7,9`
 
-#### `updateSearchAndHash( searchStr, hashStr, push, triggerPopState )`
-Update the full url. Both `searchStr` and `hashStr` are adjusted first
-
+#### `onHashchange( handler [, context])` 
+Add `handler = function( event)` to the event `hashchange`
+Can by omitted if the hash-tag is updated using `Url.updateHashParam(..)` or `Url.updateHash(..)` 
 
 #### `hashString(name, notDecoded)`
 Same as `queryString` but for the hash
@@ -45,8 +44,13 @@ Same as `queryString` but for the hash
 #### `parseHash()`
 Same as `parseQuery` but for the hash
 
-#### `updateHashParam(hashParam, value, push, triggerPopState)`
-Same as `updateSearchParam` but for the hash
+#### `updateHash(hashObj, dontCallHashChange)`
+Update hash-tag with the id-value in `hashObj` 
+If `dontCallHashChange` the hashchange-event-functions added with `Url.onHashchange( function[, context])` will not be called
+
+#### `updateHashParam(hashParam, value, dontCallHashChange)`
+Adds, updates or deletes a hash-tag
+If `dontCallHashChange` the hashchange-event-functions added with `Url.onHashchange( function[, context])` will not be called
 
 #### `validateValue( value, validator )`
 Validates `value` using `validator`
@@ -64,7 +68,7 @@ Eg. `Url.validateValue( myValue, ["_number", function( v ){ return parseFloat(v)
 
 
 #### `_parseObject( obj, validatorObj, defaultObj, options )`
-Parse obj after it is validated and converted acording to `validatorObj`, `defaultObj`, and `options`
+Parse obj after it is validated and converted according to `validatorObj`, `defaultObj`, and `options`
 
 `validatorObj`: object with `id:validator`. Failed values are removed 
 `defaultObj  `: object with `id:value`. Values to be used if `id` is missing or fails validation 

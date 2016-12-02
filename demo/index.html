@@ -28,7 +28,16 @@
 	<script src="bower_components.js"></script>
 	<script src="../src/url.js-extensions.js"></script>
 	<script>
-		function header(text){
+
+        var count = 0;
+        Url.onHashchange( function(){
+            count++;
+            console.log('Setting count='+count+' in hash but dont call onhashchange');
+           Url.updateHashParam('count', count, true);
+        });
+       
+        
+        function header(text){
 			$('body').append( $('<h2>' + text + '</h2>') );			
 		}
 
