@@ -15,7 +15,7 @@
 	<script src="bower_components.js"></script>
 	<script src="../src/url.js-extensions.js"></script>
 	<script>
-        document.write('<div>TEST #3</div><br><div>' + Math.round( Math.random()*100000000) +'</div><br><br><button onClick="clearInterval(interval);">STOP</button>');
+        document.write('<div>TEST #4</div><br><div>' + Math.round( Math.random()*100000000) +'</div><br><br><button onClick="clearInterval(interval);">STOP</button>');
     
 console.log('window.location.pathname', window.location.pathname); +  //OR window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
 console.log('window.location.protocol',window.location.protocol);
@@ -35,7 +35,14 @@ console.log(location.href, '==', window.location.protocol + "//" + window.locati
                          (window.location.pathname[0]=='/' ? "" : "/") + window.location.pathname;
             var hash = '#count=' + count;
 
-            window.history.replaceState(null, "", newUrl+hash);
+            try {
+                window.history.replaceState(null, "", newUrl+hash);              
+            }
+            catch (e) {
+                console.log('Skifter til replace(...)');
+                window.location.replace(hash);
+            }
+            
 
             //window.location.replace(hash);
         }
