@@ -15,7 +15,7 @@
 	<script src="bower_components.js"></script>
 	<script src="../src/url.js-extensions.js"></script>
 	<script>
-        document.write('<div>TEST #4</div><br><div>' + Math.round( Math.random()*100000000) +'</div><br><br><button onClick="clearInterval(interval);">STOP</button>');
+        document.write('<div>TEST #6</div><br><div>' + Math.round( Math.random()*100000000) +'</div><br><br><button onClick="clearInterval(interval);">STOP</button>');
     
 console.log('window.location.pathname', window.location.pathname); +  //OR window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
 console.log('window.location.protocol',window.location.protocol);
@@ -25,6 +25,7 @@ console.log("window.location.pathname[0]=='/'",window.location.pathname[0]=='/')
 
 console.log(location.href, '==', window.location.protocol + "//" + window.location.host + (window.location.pathname[0]=='/' ? "" : "/") + window.location.pathname);
 
+
         
         var count = 0;
         function updateHash(){
@@ -33,21 +34,24 @@ console.log(location.href, '==', window.location.protocol + "//" + window.locati
             var newUrl = window.location.protocol + "//" + 
                          window.location.host + 
                          (window.location.pathname[0]=='/' ? "" : "/") + window.location.pathname;
-            var hash = '#count=' + count;
+            var hash = '#hashcount=' + count;
+            var search = '?searchcount=' + count;
 
             try {
-                window.history.replaceState(null, "", newUrl+hash);              
+                //window.history.replaceState(null, "", newUrl+search);              
+                window.history.pushState(null, "", newUrl+search);              
             }
             catch (e) {
                 console.log('Skifter til replace(...)');
-                window.location.replace(hash);
+                window.location.replace(newUrl+search);
             }
             
 
-            //window.location.replace(hash);
+            window.location.replace(hash);
         }
 
-        var interval = setInterval(updateHash, 100);
+console.log(Url.parseAll());
+        var interval = setInterval(updateHash, 1000);
     </script>
 </body>
 </html>
