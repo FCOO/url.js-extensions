@@ -31,15 +31,20 @@
 
     //Overwrite Url._updateAll to handle Security Error in Safari on Mac that prevent more that 100 history updates in 30 sec
     window.Url._updateAll = function(s, push, triggerPopState) {
-        window.history[push ? "pushState" : "replaceState"](null, "", s);
+        try {
+            window.history[push ? "pushState" : "replaceState"](null, "", s);          
+        }
+        catch (e) {
+            //Use 'old' methods - perhaps it will reload the page 
+            window.location.replace( s );
+        }
+        
         if (triggerPopState) {
             Url.triggerPopStateCb({});
         }
         return s;
     }
 
-
-console.log(Url._updateAll);
 
     /******************************************
     anyString(name, notDecoded, search, sep)
