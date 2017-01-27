@@ -168,17 +168,11 @@
             newSearch = this._correctSearchOrHash( oldSearch, '?' ),
             oldHash   = window.location.hash,
             newHash   = this._correctSearchOrHash( oldHash, '#' ),
-            newUrl    = window.location.pathname +  //OR window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
+            newUrl    = window.location.pathname +  
                           (newSearch ? '?' + encodeURI(newSearch) : '') + 
                           (newHash   ? '#' + encodeURI(newHash)   : '');
 
-        //If the search is unchanged => only change the hash - and only if hash is changed
-        if (oldSearch.substring(1) == newSearch){
-            if (oldHash.substring(1) != newHash)
-                window.location.hash = newHash;            
-        }        
-        else 
-            this._updateAll( newUrl );          
+        this._updateAll( newUrl );          
         return newUrl;
     }
 
