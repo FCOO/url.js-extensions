@@ -28,6 +28,24 @@
         }()
     );
 
+
+    //Overwrite Url._updateAll to handle Security Error in Safari on Mac that prevent more that 100 history updates in 30 sec
+    window.Url._updateAll = function(s, push, triggerPopState) {
+        try {
+            window.history[push ? "pushState" : "replaceState"](null, "", s);          
+        }
+        catch (e) {
+            //Use 'old' methods - perhaps it will reload the page 
+            window.location.replace( s );
+        }
+        
+        if (triggerPopState) {
+            window.Url.triggerPopStateCb({});
+        }
+        return s;
+    };
+
+
     /******************************************
     anyString(name, notDecoded, search, sep)
     Copy of Url.queryString with optional input string (search) 
@@ -150,17 +168,11 @@
             newSearch = this._correctSearchOrHash( oldSearch, '?' ),
             oldHash   = window.location.hash,
             newHash   = this._correctSearchOrHash( oldHash, '#' ),
-            newUrl    = window.location.pathname +  //OR window.location.protocol + "//" + window.location.host + (window.location.host ? "/" : "") + window.location.pathname +
+            newUrl    = window.location.pathname +  
                           (newSearch ? '?' + encodeURI(newSearch) : '') + 
                           (newHash   ? '#' + encodeURI(newHash)   : '');
 
-        //If the search is unchanged => only change the hash - and only if hash is changed
-        if (oldSearch.substring(1) == newSearch){
-            if (oldHash.substring(1) != newHash)
-                window.location.hash = newHash;            
-        }        
-        else 
-            this._updateAll( newUrl );          
+        this._updateAll( newUrl );          
         return newUrl;
     }
 

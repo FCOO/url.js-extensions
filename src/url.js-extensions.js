@@ -40,10 +40,10 @@
         }
         
         if (triggerPopState) {
-            Url.triggerPopStateCb({});
+            window.Url.triggerPopStateCb({});
         }
         return s;
-    }
+    };
 
 
     /******************************************
