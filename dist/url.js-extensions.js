@@ -11,10 +11,6 @@
 (function ($, window, document, undefined) {
     "use strict";
 
-    //Using html5-history-api as polyfill for IE9
-    var location = window.history.location || window.location;
-
-
     //Workaround for event.newURL and event.oldURL
     //let this snippet run before your hashchange event binding code
     if (!window.HashChangeEvent)(

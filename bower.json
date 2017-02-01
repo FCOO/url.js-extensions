@@ -1,6 +1,6 @@
 {
   "name": "url.js-extensions",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/FCOO/url.js-extensions",
   "authors": [
     "Niels Holt"
@@ -15,18 +15,12 @@
   },
   "dependencies": {
     "jquery": "latest",
-    "url.js": "jillix/url.js#2.4.0",
-    "html5-history-api": "devote/HTML5-History-API#^4.2.7"
+    "url.js": "jillix/url.js#2.4.0"
   },
   "overrides": {
     "url.js": {
       "main": [
         "src/url.min.js"
-      ]
-    },
-    "history.js": {
-      "main": [
-        "scripts/bundled/html4+html5/native.history.js"
       ]
     }
   },
