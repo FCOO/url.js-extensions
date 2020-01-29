@@ -1,0 +1,1 @@
+Due to missing bower.json in url.js the packages is included as dev-dependences and manually copied into /src

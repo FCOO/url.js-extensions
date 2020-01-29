@@ -1,6 +1,6 @@
 {
   "name": "url.js-extensions",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "https://github.com/FCOO/url.js-extensions",
   "authors": [
     "Niels Holt"
@@ -14,20 +14,11 @@
     "url": "git://github.com/FCOO/url.js-extensions.git"
   },
   "dependencies": {
-    "jquery": "latest",
+    "jquery": "latest"
+  },
+  "devDependencies": {
     "url.js": "jillix/url.js#2.4.0"
   },
-  "overrides": {
-    "url.js": {
-      "main": [
-        "src/url.min.js"
-      ]
-    }
-  },
-  "resolutions": {
-    "url.js": "2.4.0"
-  },
-  "devDependencies": {},
   "license": "MIT",
   "ignore": [
     "**/.*",

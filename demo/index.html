@@ -26,6 +26,7 @@
 
 <body>
 	<script src="bower_components.js"></script>
+	<script src="../src/url.js"></script>
 	<script src="../src/url.js-extensions.js"></script>
 	<script>
 
@@ -35,21 +36,21 @@
             console.log('Setting count='+count+' in hash but dont call onhashchange');
            Url.updateHashParam('count', count, true);
         });
-       
-        
+
+
         function header(text){
-			$('body').append( $('<h2>' + text + '</h2>') );			
+			$('body').append( $('<h2>' + text + '</h2>') );
 		}
 
 		function button(onClick){
-			$('body').append( $('<button onClick="'+onClick+'">' + onClick+ '</button><br>') );			
+			$('body').append( $('<button onClick="'+onClick+'">' + onClick+ '</button><br>') );
 		}
-		
+
 		function display(functionStr, urlResult){
 			var func = new Function('return '+functionStr),
 					funcReturn = func(),
 					funcReturnAsString;
-					
+
 			funcReturnAsString = funcReturn;
 			if ($.isArray(funcReturn)){
 			  funcReturnAsString = '[';
@@ -69,15 +70,15 @@
 			}
 
 
-			var $p = $('<p></p>').appendTo($('body'));			
+			var $p = $('<p></p>').appendTo($('body'));
 			$('<span class="function">').appendTo($p).text(functionStr);
 			$('<span>').appendTo($p).text('=>');
 			$('<span class="result">').appendTo($p).text(funcReturnAsString);
 			$('<span>').appendTo($p).text('(' + (typeof funcReturn) + ')');
 
-			console.log(functionStr, '=>', funcReturnAsString, 'return=',funcReturn);			
+			console.log(functionStr, '=>', funcReturnAsString, 'return=',funcReturn);
 		}
-	
+
 		header('url.js-extensions');
 
 			display('Url.adjustUrl();', true);
@@ -88,7 +89,7 @@
 
 			display('JSON.stringify( Url.parseQuery() )', true);
 
-   
+
 			//display('Url.updateSearchParam("on", true);', true);
 			display('Url.updateHashParam("on", false);', true);
 
